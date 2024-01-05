@@ -47,11 +47,11 @@ open class ContactMessageCell: MessageContentCell {
   open override func prepareForReuse() {
     super.prepareForReuse()
     nameLabel.text = ""
-    initialsLabel.text = ""
+//    initialsLabel.text = ""
   }
 
   open func setupConstraints() {
-    initialsContainerView.constraint(equalTo: CGSize(width: 26, height: 26))
+    initialsContainerView.constraint(equalTo: CGSize(width: 48, height: 48))
     let initialsConstraints = initialsContainerView.addConstraints(
       left: messageContainerView.leftAnchor,
       centerY: messageContainerView.centerYAnchor,
@@ -59,6 +59,7 @@ open class ContactMessageCell: MessageContentCell {
     initialsConstraints.first?.identifier = ConstraintsID.initialsContainerLeftConstraint.rawValue
     initialsContainerView.layer.cornerRadius = 13
     initialsLabel.fillSuperview()
+      
     disclosureImageView.constraint(equalTo: CGSize(width: 20, height: 20))
     let disclosureConstraints = disclosureImageView.addConstraints(
       right: messageContainerView.rightAnchor,
@@ -84,9 +85,9 @@ open class ContactMessageCell: MessageContentCell {
   {
     super.configure(with: message, at: indexPath, and: messagesCollectionView)
     // setup data
-    guard case .contact(let contactItem) = message.kind else { fatalError("Failed decorate audio cell") }
-    nameLabel.text = contactItem.displayName
-    initialsLabel.text = contactItem.initials
+    guard case .contact(let contactItem) = message.kind else { fatalError("Failed decorate contact cell") }
+      nameLabel.text = "\(contactItem.nickname)的名片"
+//      initialsLabel.text = ""
     // setup constraints
     guard let dataSource = messagesCollectionView.messagesDataSource else {
       fatalError(MessageKitError.nilMessagesDataSource)
@@ -123,18 +124,18 @@ open class ContactMessageCell: MessageContentCell {
   /// The view container that holds contact initials
   public lazy var initialsContainerView: UIView = {
     let initialsContainer = UIView(frame: CGRect.zero)
+      initialsContainer.layer.cornerRadius = 50
+
+      initialsContainer.layer.masksToBounds = true
     initialsContainer.backgroundColor = .collectionViewBackground
     return initialsContainer
   }()
 
-  /// The label that display the contact initials
-  public lazy var initialsLabel: UILabel = {
-    let initialsLabel = UILabel(frame: CGRect.zero)
-    initialsLabel.textAlignment = .center
-    initialsLabel.textColor = .label
-    initialsLabel.font = UIFont.preferredFont(forTextStyle: .footnote)
-    return initialsLabel
-  }()
+    public lazy var initialsLabel: UIImageView = {
+        let initialsContainer = UIImageView(image: UIImage(systemName: ""))
+      initialsContainer.backgroundColor = .collectionViewBackground
+      return initialsContainer
+    }()
 
   /// The label that display contact name
   public lazy var nameLabel: UILabel = {
@@ -145,8 +146,10 @@ open class ContactMessageCell: MessageContentCell {
 
   /// The disclosure image view
   public lazy var disclosureImageView: UIImageView = {
-    let disclosureImage = UIImage.messageKitImageWith(type: .disclosure)?.withRenderingMode(.alwaysTemplate)
+//    let disclosureImage = UIImage.messageKitImageWith(type: .disclosure)?.withRenderingMode(.alwaysTemplate)
+    let disclosureImage = UIImage(systemName: "Person")
     let disclosure = UIImageView(image: disclosureImage)
     return disclosure
   }()
 }
+

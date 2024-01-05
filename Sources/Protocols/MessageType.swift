@@ -25,15 +25,28 @@ import Foundation
 /// A standard protocol representing a message.
 /// Use this protocol to create your own message object to be used by MessageKit.
 public protocol MessageType {
-  /// The sender of the message.
-  var sender: SenderType { get }
+    /// The sender of the message.
+    var sender: SenderType { get }
 
-  /// The unique identifier for the message.
-  var messageId: String { get }
+    /// The unique identifier for the message.
+    var messageId: String { get }
 
-  /// The date the message was sent.
-  var sentDate: Date { get }
+    /// The date the message was sent.
+    var sentDate: Date { get }
 
-  /// The kind of message and its underlying kind.
-  var kind: MessageKind { get }
+    var delay: Bool { get }
+    
+    var isPersonalChat: Bool { get }
+    
+    var sn: Int64 { get }
+    /// The kind of message and its underlying kind.
+    var kind: MessageKind { get }
+
+    var viewed: Int64 { get }
+    
+    var status: Int64 { get }
+
+    var autoDel: Int64 { get }
+
+    var text: String { get }
 }

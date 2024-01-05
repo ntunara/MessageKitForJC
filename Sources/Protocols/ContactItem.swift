@@ -24,15 +24,12 @@ import Foundation
 
 /// A protocol used to represent the data for a contact message.
 public protocol ContactItem {
+    var userId: Int64 { get }
   /// contact displayed name
-  var displayName: String { get }
+  var nickname: String { get }
 
   /// initials from contact first and last name
-  var initials: String { get }
-
-  /// contact phone numbers
-  var phoneNumbers: [String] { get }
-
-  /// contact emails
-  var emails: [String] { get }
+  var account: String { get }
+    
+  var avatar: String { get }
 }

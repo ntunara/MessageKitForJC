@@ -29,6 +29,7 @@ import UIKit
 /// that is used to display conversation interfaces.
 open class MessagesViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
   // MARK: Lifecycle
+    open var messagesCell = [String:UICollectionViewCell]()
 
   deinit {
     removeMenuControllerObservers()
@@ -130,50 +131,63 @@ open class MessagesViewController: UIViewController, UICollectionViewDelegateFlo
     switch message.kind {
     case .text, .attributedText, .emoji:
       if let cell = messagesDataSource.textCell(for: message, at: indexPath, in: messagesCollectionView) {
+          self.messagesCell[message.messageId] = cell
         return cell
       } else {
         let cell = messagesCollectionView.dequeueReusableCell(TextMessageCell.self, for: indexPath)
         cell.configure(with: message, at: indexPath, and: messagesCollectionView)
+          self.messagesCell[message.messageId] = cell
         return cell
       }
     case .photo, .video:
       if let cell = messagesDataSource.photoCell(for: message, at: indexPath, in: messagesCollectionView) {
+          self.messagesCell[message.messageId] = cell
         return cell
       } else {
         let cell = messagesCollectionView.dequeueReusableCell(MediaMessageCell.self, for: indexPath)
         cell.configure(with: message, at: indexPath, and: messagesCollectionView)
+          self.messagesCell[message.messageId] = cell
         return cell
       }
     case .location:
       if let cell = messagesDataSource.locationCell(for: message, at: indexPath, in: messagesCollectionView) {
+          self.messagesCell[message.messageId] = cell
         return cell
       } else {
         let cell = messagesCollectionView.dequeueReusableCell(LocationMessageCell.self, for: indexPath)
         cell.configure(with: message, at: indexPath, and: messagesCollectionView)
+          self.messagesCell[message.messageId] = cell
         return cell
       }
     case .audio:
       if let cell = messagesDataSource.audioCell(for: message, at: indexPath, in: messagesCollectionView) {
+          self.messagesCell[message.messageId] = cell
         return cell
       } else {
         let cell = messagesCollectionView.dequeueReusableCell(AudioMessageCell.self, for: indexPath)
         cell.configure(with: message, at: indexPath, and: messagesCollectionView)
+          self.messagesCell[message.messageId] = cell
         return cell
       }
     case .contact:
       if let cell = messagesDataSource.contactCell(for: message, at: indexPath, in: messagesCollectionView) {
+          self.messagesCell[message.messageId] = cell
         return cell
       } else {
         let cell = messagesCollectionView.dequeueReusableCell(ContactMessageCell.self, for: indexPath)
         cell.configure(with: message, at: indexPath, and: messagesCollectionView)
+          self.messagesCell[message.messageId] = cell
         return cell
       }
     case .linkPreview:
       let cell = messagesCollectionView.dequeueReusableCell(LinkPreviewMessageCell.self, for: indexPath)
       cell.configure(with: message, at: indexPath, and: messagesCollectionView)
+        self.messagesCell[message.messageId] = cell
       return cell
     case .custom:
-      return messagesDataSource.customCell(for: message, at: indexPath, in: messagesCollectionView)
+      let cell = messagesDataSource.customCell(for: message, at: indexPath, in: messagesCollectionView)
+        self.messagesCell[message.messageId] = cell
+        return cell
     }
   }
 
@@ -260,6 +274,8 @@ open class MessagesViewController: UIViewController, UICollectionViewDelegateFlo
     if isSectionReservedForTypingIndicator(indexPath.section) {
       return false
     }
+      
+    //  messagesCollectionView.deleteSections([indexPath.section])
 
     let message = messagesDataSource.messageForItem(at: indexPath, in: messagesCollectionView)
 
@@ -285,12 +301,19 @@ open class MessagesViewController: UIViewController, UICollectionViewDelegateFlo
     return (action == NSSelectorFromString("copy:"))
   }
 
-  open func collectionView(_: UICollectionView, performAction _: Selector, forItemAt indexPath: IndexPath, withSender _: Any?) {
+  open func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender _: Any?) {
     guard let messagesDataSource = messagesCollectionView.messagesDataSource else {
       fatalError(MessageKitError.nilMessagesDataSource)
     }
     let pasteBoard = UIPasteboard.general
     let message = messagesDataSource.messageForItem(at: indexPath, in: messagesCollectionView)
+      
+//      if action == NSSelectorFromString("quote:") {
+//          print("Quote : \(messagesCollectionView.numberOfSections) \(indexPath.section)")
+//
+//
+//
+//      }
 
     switch message.kind {
     case .text(let text), .emoji(let text):
